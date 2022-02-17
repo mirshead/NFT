@@ -1,0 +1,91 @@
+{
+	"compiler": {
+		"version": "0.5.17+commit.d19bba13"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"constant": false,
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "operator",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "from",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bytes",
+						"name": "data",
+						"type": "bytes"
+					}
+				],
+				"name": "onKIP17Received",
+				"outputs": [
+					{
+						"internalType": "bytes4",
+						"name": "",
+						"type": "bytes4"
+					}
+				],
+				"payable": false,
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"details": "Interface for any contract that wants to support safeTransfers from KIP17 asset contracts.see http://kips.klaytn.com/KIPs/kip-17-non_fungible_token",
+			"methods": {
+				"onKIP17Received(address,address,uint256,bytes)": {
+					"details": "The KIP17 smart contract calls this function on the recipient after a `safeTransfer`. This function MUST return the function selector, otherwise the caller will revert the transaction. The selector to be returned can be obtained as `this.onKIP17Received.selector`. This function MAY throw to revert and reject the transfer. Note: the KIP17 contract address is always the message sender.",
+					"params": {
+						"data": "Additional data with no specified format",
+						"from": "The address which previously owned the token",
+						"operator": "The address which called `safeTransferFrom` function",
+						"tokenId": "The NFT identifier which is being transferred"
+					},
+					"return": "bytes4 `bytes4(keccak256(\"onKIP17Received(address,address,uint256,bytes)\"))`"
+				}
+			},
+			"title": "KIP17 token receiver interface"
+		},
+		"userdoc": {
+			"methods": {
+				"onKIP17Received(address,address,uint256,bytes)": {
+					"notice": "Handle the receipt of an NFT"
+				}
+			}
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contract_archeworld.sol": "IKIP17Receiver"
+		},
+		"evmVersion": "constantinople",
+		"libraries": {},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contract_archeworld.sol": {
+			"keccak256": "0x53299e0006cef7436d8a1df40df4b8bc3dc52b5c5e49417083b49c6c35d07a2c",
+			"urls": [
+				"bzz-raw://ee1ca79f48bfb3680a3d705130fff2e26d5fa29efeb61bc7a63826e718d22da1",
+				"dweb:/ipfs/Qmd7XRBus1rqFfNtVay543zzaYJC9qVkANUQqUi3R3DtT7"
+			]
+		}
+	},
+	"version": 1
+}
