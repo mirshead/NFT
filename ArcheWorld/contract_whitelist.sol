@@ -731,6 +731,7 @@ contract W2B721 is ERC721Full, ERC721Burnable, Ownable {
 
     string private SCVersion = '1.3';
     string private _contractURI = "";
+    bool private useWhitelisted = false;
 
      constructor(
         string memory baseURI,
@@ -771,7 +772,7 @@ contract W2B721 is ERC721Full, ERC721Burnable, Ownable {
 
     function mintWithUri(address to, uint256 tokenId, string memory uri) public onlyOwnerOrOperator returns (bool) {
         require(!isBlacklistedAddress(to), "'to' adddress is a blacklisted address");
-        require(isWhitelistedAddress(to), "'to' address is not a whitelisted address");
+        require(!useWhitelistedAddress() || isWhitelistedAddress(to), "'to' address is not a whitelisted address");
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
         incrementMintCount();
@@ -974,5 +975,13 @@ contract W2B721 is ERC721Full, ERC721Burnable, Ownable {
 
     function isWhitelistedAddress(address targetAddress) public view returns (bool) {
         return Roles.has(whitelistedRole, targetAddress);
+    }
+
+    function useWhitelistedAddress() public view returns (bool) {
+        return useWhitelisted;
+    }
+
+    function modifyUseWhitelisted(bool use) public onlyOwnerOrOperator {
+        useWhitelisted = use;
     }
 }
