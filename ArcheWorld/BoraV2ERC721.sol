@@ -1,4 +1,5 @@
 pragma solidity ^0.5.6;
+pragma experimental ABIEncoderV2;
 
 library SafeMath {
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
@@ -781,6 +782,36 @@ contract BoraV2ERC721 is ERC721Full, ERC721Burnable, Ownable {
         return true;
     }
 
+    function mintWithUri(address to, uint256 tokenId, string memory uri, uint256 serviceId, uint256 logNo) public onlyOwnerOrAdmin returns (bool) {
+        mintWithUri(to, tokenId, uri, serviceId);
+    }
+
+    function mintMultipleTokensWithUri(address[] memory receivers, uint256[] memory tokenIds, string[] memory uris) public onlyOwnerOrAdmin returns (bool){
+        require(receivers.length == tokenIds.length && tokenIds.length == uris.length, "Input arrays must be the same length");
+
+        for (uint i = 0; i < receivers.length; i++) {
+            mintWithUri(receivers[i], tokenIds[i], uris[i]);
+        }
+        return true;
+    }
+
+    function mintMultipleTokensWithUri(address[] memory receivers, uint256[] memory tokenIds, string[] memory uris, uint256 logNo) public onlyOwnerOrAdmin returns (bool) {
+        return mintMultipleTokensWithUri(receivers, tokenIds, uris);
+    }
+
+    function mintMultipleTokensWithUri(address[] memory receivers, uint256[] memory tokenIds, string[] memory uris, uint256[] memory serviceIds) public onlyOwnerOrAdmin returns (bool){
+        require(receivers.length == tokenIds.length && tokenIds.length == uris.length && uris.length == serviceIds.length, "Input arrays must be the same length");
+
+        for (uint i = 0; i < receivers.length; i++) {
+            mintWithUri(receivers[i], tokenIds[i], uris[i], serviceIds[i]);
+        }
+        return true;
+    }
+
+    function mintMultipleTokensWithUri(address[] memory receivers, uint256[] memory tokenIds, string[] memory uris, uint256[] memory serviceIds, uint256 logNo) public onlyOwnerOrAdmin returns (bool){
+        return mintMultipleTokensWithUri(receivers, tokenIds, uris, serviceIds);
+    }
+
     function mint(address to, uint256 tokenId) public onlyOwnerOrAdmin returns (bool) {
         require(!isBlacklistedAddress(to), "'to' address is a blacklisted address");
         require(isWhitelistedAddress(to), "'to' address is not a whitelisted address");
@@ -936,6 +967,16 @@ contract BoraV2ERC721 is ERC721Full, ERC721Burnable, Ownable {
         return burn(tokenId);
     }
 
+    function burnMultipleTokens(uint256[] memory tokenIds) public onlyOwnerOrAdmin {
+        for (uint i = 0; i < tokenIds.length; i++) {
+            burn(tokenIds[i]);
+        }
+    }
+
+    function burnMultipleTokens(uint256[] memory tokenIds, uint256 logNo) public onlyOwnerOrAdmin {
+        burnMultipleTokens(tokenIds);
+    }
+
     function getMintCount() public view returns (uint256) {
         return totalMintCount;
     }
@@ -1018,6 +1059,14 @@ contract BoraV2ERC721 is ERC721Full, ERC721Burnable, Ownable {
         require(useWhitelisted != useFlag, "UseWhitelisted status is already set to the desired state");
         useWhitelisted = useFlag;
         emit UseWhitelistedStatusChanged(_msgSender(), useWhitelisted);
+    }
+
+    function setApprovalForAll(address to, bool approved, uint256 logNo) public {
+        super.setApprovalForAll(to, approved);
+    }
+
+    function approve(address to, uint256 tokenId, uint256 logNo) public {
+        super.approve(to, tokenId);
     }
 
 }
