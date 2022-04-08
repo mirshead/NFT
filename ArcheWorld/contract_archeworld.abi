@@ -72,6 +72,32 @@
 			{
 				"indexed": true,
 				"internalType": "address",
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "MinterAdded",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "MinterRemoved",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
 				"name": "previousOwner",
 				"type": "address"
 			},
@@ -163,17 +189,19 @@
 		"type": "event"
 	},
 	{
-		"anonymous": false,
+		"constant": false,
 		"inputs": [
 			{
-				"indexed": false,
-				"internalType": "bool",
-				"name": "revealed",
-				"type": "bool"
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
 			}
 		],
-		"name": "info",
-		"type": "event"
+		"name": "addMinter",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
 	},
 	{
 		"constant": false,
@@ -185,6 +213,26 @@
 			}
 		],
 		"name": "addPauser",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "requestedCount",
+				"type": "uint256"
+			}
+		],
+		"name": "airDropMint",
 		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
@@ -295,6 +343,27 @@
 	},
 	{
 		"constant": true,
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "isMinter",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
 		"inputs": [],
 		"name": "isOwner",
 		"outputs": [
@@ -323,6 +392,21 @@
 				"internalType": "bool",
 				"name": "",
 				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "merkleRoot",
+		"outputs": [
+			{
+				"internalType": "bytes32",
+				"name": "",
+				"type": "bytes32"
 			}
 		],
 		"payable": false,
@@ -370,42 +454,6 @@
 			},
 			{
 				"internalType": "string",
-				"name": "notRevealURI",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "tokenURI",
-				"type": "string"
-			}
-		],
-		"name": "mintRevealWithTokenURI",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "to",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "tokenId",
-				"type": "uint256"
-			},
-			{
-				"internalType": "string",
 				"name": "tokenURI",
 				"type": "string"
 			}
@@ -420,6 +468,21 @@
 		],
 		"payable": false,
 		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "mintingInformation",
+		"outputs": [
+			{
+				"internalType": "uint256[7]",
+				"name": "",
+				"type": "uint256[7]"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -499,6 +562,45 @@
 	},
 	{
 		"constant": false,
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "requestedCount",
+				"type": "uint256"
+			}
+		],
+		"name": "publicMint",
+		"outputs": [],
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "publicMintEnabled",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "renounceMinter",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
 		"inputs": [],
 		"name": "renounceOwnership",
 		"outputs": [],
@@ -517,8 +619,23 @@
 	},
 	{
 		"constant": false,
+		"inputs": [
+			{
+				"internalType": "bool",
+				"name": "_state",
+				"type": "bool"
+			}
+		],
+		"name": "reveal",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
 		"inputs": [],
-		"name": "revealCollection",
+		"name": "revealed",
 		"outputs": [
 			{
 				"internalType": "bool",
@@ -527,7 +644,7 @@
 			}
 		],
 		"payable": false,
-		"stateMutability": "nonpayable",
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -600,6 +717,126 @@
 			}
 		],
 		"name": "setApprovalForAll",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_newBaseURI",
+				"type": "string"
+			}
+		],
+		"name": "setBaseURI",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "_merkleRoot",
+				"type": "bytes32"
+			}
+		],
+		"name": "setMerkleRoot",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_newNotRevealedURI",
+				"type": "string"
+			}
+		],
+		"name": "setNotRevealedURI",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"internalType": "bool",
+				"name": "_state",
+				"type": "bool"
+			}
+		],
+		"name": "setPublicMintEnabled",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"internalType": "bool",
+				"name": "_state",
+				"type": "bool"
+			}
+		],
+		"name": "setWhitelistMintEnabled",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "newAntibotInterval",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "newMintLimitPerBlock",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "newMintLimitPerSale",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "newMintStartBlockNumber",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "newMintIndexForSale",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "newMaxSaleAmount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "newMintPrice",
+				"type": "uint256"
+			}
+		],
+		"name": "setupSale",
 		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
@@ -768,6 +1005,71 @@
 		"constant": false,
 		"inputs": [],
 		"name": "unpause",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "whitelistClaimed",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "requestedCount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bytes32[]",
+				"name": "_merkleProof",
+				"type": "bytes32[]"
+			}
+		],
+		"name": "whitelistMint",
+		"outputs": [],
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "whitelistMintEnabled",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "withdraw",
 		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",

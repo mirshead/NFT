@@ -1,8 +1,6 @@
-// Sources flattened with hardhat v2.6.8 https://hardhat.org
+// File: contracts\introspection\IKIP13.sol
 
-// File contracts/introspection/IKIP13.sol
-
-pragma solidity ^0.5.6;
+pragma solidity ^0.5.0;
 
 /**
  * @dev Interface of the KIP-13 standard, as defined in the
@@ -25,10 +23,9 @@ interface IKIP13 {
     function supportsInterface(bytes4 interfaceId) external view returns (bool);
 }
 
+// File: contracts\IKIP17.sol
 
-// File contracts/token/KIP17/IKIP17.sol
-
-
+pragma solidity ^0.5.0;
 
 /**
  * @dev Required interface of an KIP17 compliant contract.
@@ -79,10 +76,9 @@ contract IKIP17 is IKIP13 {
     function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data) public;
 }
 
+// File: contracts\IERC721Receiver.sol
 
-// File contracts/token/KIP17/IERC721Receiver.sol
-
-
+pragma solidity ^0.5.0;
 
 /**
  * @title ERC721 token receiver interface
@@ -108,10 +104,9 @@ contract IERC721Receiver {
     public returns (bytes4);
 }
 
+// File: contracts\IKIP17Receiver.sol
 
-// File contracts/token/KIP17/IKIP17Receiver.sol
-
-
+pragma solidity ^0.5.0;
 
 /**
  * @title KIP17 token receiver interface
@@ -138,10 +133,9 @@ contract IKIP17Receiver {
     public returns (bytes4);
 }
 
+// File: contracts\math\SafeMath.sol
 
-// File contracts/math/SafeMath.sol
-
-
+pragma solidity ^0.5.0;
 
 /**
  * @dev Wrappers over Solidity's arithmetic operations with added overflow
@@ -298,10 +292,9 @@ library SafeMath {
     }
 }
 
+// File: contracts\utils\Address.sol
 
-// File contracts/utils/Address.sol
-
-
+pragma solidity ^0.5.0;
 
 /**
  * @dev Collection of functions related to the address type,
@@ -329,10 +322,9 @@ library Address {
     }
 }
 
+// File: contracts\drafts\Counters.sol
 
-// File contracts/drafts/Counters.sol
-
-
+pragma solidity ^0.5.0;
 
 /**
  * @title Counters
@@ -368,10 +360,9 @@ library Counters {
     }
 }
 
+// File: contracts\introspection\KIP13.sol
 
-// File contracts/introspection/KIP13.sol
-
-
+pragma solidity ^0.5.0;
 
 /**
  * @dev Implementation of the `IKIP13` interface.
@@ -422,10 +413,9 @@ contract KIP13 is IKIP13 {
     }
 }
 
+// File: contracts\KIP17.sol
 
-// File contracts/token/KIP17/KIP17.sol
-
-
+pragma solidity ^0.5.0;
 
 
 
@@ -745,10 +735,9 @@ contract KIP17 is KIP13, IKIP17 {
     }
 }
 
+// File: contracts\IKIP17Enumerable.sol
 
-// File contracts/token/KIP17/IKIP17Enumerable.sol
-
-
+pragma solidity ^0.5.0;
 
 /**
  * @title KIP-17 Non-Fungible Token Standard, optional enumeration extension
@@ -761,10 +750,9 @@ contract IKIP17Enumerable is IKIP17 {
     function tokenByIndex(uint256 index) public view returns (uint256);
 }
 
+// File: contracts\KIP17Enumerable.sol
 
-// File contracts/token/KIP17/KIP17Enumerable.sol
-
-
+pragma solidity ^0.5.0;
 
 
 
@@ -962,10 +950,9 @@ contract KIP17Enumerable is KIP13, KIP17, IKIP17Enumerable {
     }
 }
 
+// File: contracts\IKIP17Metadata.sol
 
-// File contracts/token/KIP17/IKIP17Metadata.sol
-
-
+pragma solidity ^0.5.0;
 
 /**
  * @title KIP-17 Non-Fungible Token Standard, optional metadata extension
@@ -977,10 +964,9 @@ contract IKIP17Metadata is IKIP17 {
     function tokenURI(uint256 tokenId) external view returns (string memory);
 }
 
+// File: contracts\KIP17Metadata.sol
 
-// File contracts/token/KIP17/KIP17Metadata.sol
-
-
+pragma solidity ^0.5.0;
 
 
 
@@ -993,13 +979,6 @@ contract KIP17Metadata is KIP13, KIP17, IKIP17Metadata {
 
     // Optional mapping for token URIs
     mapping(uint256 => string) private _tokenURIs;
-
-    //mapping(uint256 => bool) private _revealed;
-    bool private _revealed = false;
-    string private _notRevealURI = "";
-
-    event infoReveal(bool revealed);
-    event infoTokeUri(uint256 tokenId);
 
     /*
      *     bytes4(keccak256('name()')) == 0x06fdde03
@@ -1044,16 +1023,7 @@ contract KIP17Metadata is KIP13, KIP17, IKIP17Metadata {
      */
     function tokenURI(uint256 tokenId) external view returns (string memory) {
         require(_exists(tokenId), "KIP17Metadata: URI query for nonexistent token");
-        /*
-        if (_revealed[tokenId] == true) {
-            return _tokenURIs[tokenId];
-        } 
-        */ 
-        if (_revealed == true) {
-            return _tokenURIs[tokenId];
-        } else {
-            return _notRevealURI;
-        }
+        return _tokenURIs[tokenId];
     }
 
     /**
@@ -1065,20 +1035,6 @@ contract KIP17Metadata is KIP13, KIP17, IKIP17Metadata {
     function _setTokenURI(uint256 tokenId, string memory uri) internal {
         require(_exists(tokenId), "KIP17Metadata: URI set of nonexistent token");
         _tokenURIs[tokenId] = uri;
-        emit infoTokeUri(tokenId);
-     }
-
-     function _setNotRevealURI(string memory uri) internal {
-         _notRevealURI = uri;
-     }
-
-    //function _setReveal(uint256 tokenId, bool reveal) internal {
-    function _setReveal(bool reveal) internal {
-        //require(_exists(tokenId), "KIP17Metadata: URI set of nonexistent token");        
-        //_revealed[tokenId] = reveal;
-        //emit info(tokenId, _revealed[tokenId]);
-        _revealed = reveal;
-        emit infoReveal(_revealed);
     }
 
     /**
@@ -1098,29 +1054,9 @@ contract KIP17Metadata is KIP13, KIP17, IKIP17Metadata {
     }
 }
 
+// File: contracts\ownership\Ownable.sol
 
-// File contracts/token/KIP17/KIP17Full.sol
-
-
-
-
-
-/**
- * @title Full KIP-17 Token
- * This implementation includes all the required and some optional functionality of the KIP-17 standard
- * Moreover, it includes approve all functionality using operator terminology
- * @dev see http://kips.klaytn.com/KIPs/kip-17-non_fungible_token
- */
-contract KIP17Full is KIP17, KIP17Enumerable, KIP17Metadata {
-    constructor (string memory name, string memory symbol) public KIP17Metadata(name, symbol) {
-        // solhint-disable-previous-line no-empty-blocks
-    }
-}
-
-
-// File contracts/ownership/Ownable.sol
-
-
+pragma solidity ^0.5.0;
 
 /**
  * @dev Contract module which provides a basic access control mechanism, where
@@ -1196,143 +1132,9 @@ contract Ownable {
     }
 }
 
+// File: contracts\roles\Roles.sol
 
-// File contracts/token/KIP17/KIP17MetadataMintableOwnable.sol
-
-
-
-
-
-/**
- * @title KIP17MetadataMintable
- * @dev KIP17 minting logic with metadata.
- */
-contract KIP17MetadataMintableOwnable is KIP13, KIP17, KIP17Metadata, Ownable {
-
-    bytes4 private constant _INTERFACE_ID_KIP17_METADATA_MINTABLE = 0xfac27f46;
-
-    /**
-     * @dev Constructor function.
-     */
-    constructor () public {
-        // register the supported interface to conform to KIP17Mintable via KIP13
-        _registerInterface(_INTERFACE_ID_KIP17_METADATA_MINTABLE);
-    }
-
-    /**
-     * @dev Function to mint tokens.
-     * @param to The address that will receive the minted tokens.
-     * @param tokenId The token id to mint.
-     * @param tokenURI The token URI of the minted token.
-     * @return A boolean that indicates if the operation was successful.
-     */
-    function mintWithTokenURI(address to, uint256 tokenId, string memory tokenURI) public onlyOwner returns (bool) {
-        _mint(to, tokenId);
-        _setTokenURI(tokenId, tokenURI);
-        _setReveal(true);
-        //_setReveal(tokenId, true);
-        return true;
-    }
-
-    function mintRevealWithTokenURI(address to, uint256 tokenId, string memory notRevealURI, string memory tokenURI) public onlyOwner returns (bool) {
-        _mint(to, tokenId);
-        _setTokenURI(tokenId, tokenURI);
-        _setNotRevealURI(notRevealURI);
-        //_setReveal(tokenId, false);
-        return true;
-    }
-    /*
-    function revealCollection(uint256 tokenId) public onlyOwner returns (bool) {
-        _setReveal(tokenId, true);
-        return true;
-    }
-    */
-    function revealCollection() public onlyOwner returns (bool) {
-        _setReveal(true);        
-        return true;
-    }
-
-//    function burn(uint256 tokenId) public onlyOwner returns (bool) {
-//        _burn(tokenId)
-//    }
-
-}
-
-
-// File contracts/token/KIP17/KIP17MintableOwnable.sol
-
-
-
-
-/**
- * @title KIP17Mintable
- * @dev KIP17 minting logic.
- */
-contract KIP17MintableOwnable is KIP17, Ownable {
-    bytes4 private constant _INTERFACE_ID_KIP17_MINTABLE = 0xeab83e20;
-
-    /**
-     * @dev Constructor function.
-     */
-    constructor () public {
-        // register the supported interface to conform to KIP17Mintable via KIP13
-        _registerInterface(_INTERFACE_ID_KIP17_MINTABLE);
-    }
-
-    /**
-     * @dev Function to mint tokens.
-     * @param to The address that will receive the minted tokens.
-     * @param tokenId The token id to mint.
-     * @return A boolean that indicates if the operation was successful.
-     */
-    function mint(address to, uint256 tokenId) public onlyOwner returns (bool) {
-        _mint(to, tokenId);
-        return true;
-    }
-}
-
-
-// File contracts/token/KIP17/KIP17Burnable.sol
-
-
-
-
-/**
- * @title KIP17 Burnable Token
- * @dev KIP17 Token that can be irreversibly burned (destroyed).
- * See http://kips.klaytn.com/KIPs/kip-17-non_fungible_token
- */
-contract KIP17Burnable is KIP13, KIP17 {
-    /*
-     *     bytes4(keccak256('burn(uint256)')) == 0x42966c68
-     *
-     *     => 0x42966c68 == 0x42966c68
-     */
-    bytes4 private constant _INTERFACE_ID_KIP17_BURNABLE = 0x42966c68;
-
-    /**
-     * @dev Constructor function.
-     */
-    constructor () public {
-        // register the supported interface to conform to KIP17Burnable via KIP13
-        _registerInterface(_INTERFACE_ID_KIP17_BURNABLE);
-    }
-
-    /**
-     * @dev Burns a specific KIP17 token.
-     * @param tokenId uint256 id of the KIP17 token to be burned.
-     */
-    function burn(uint256 tokenId) public {
-        //solhint-disable-next-line max-line-length
-        require(_isApprovedOrOwner(msg.sender, tokenId), "KIP17Burnable: caller is not owner nor approved");
-        _burn(tokenId);
-    }
-}
-
-
-// File contracts/access/Roles.sol
-
-
+pragma solidity ^0.5.0;
 
 /**
  * @title Roles
@@ -1369,10 +1171,453 @@ library Roles {
     }
 }
 
+// File: contracts\roles\MinterRole.sol
 
-// File contracts/access/roles/PauserRole.sol
+pragma solidity ^0.5.0;
+
+contract MinterRole {
+    using Roles for Roles.Role;
+
+    event MinterAdded(address indexed account);
+    event MinterRemoved(address indexed account);
+
+    Roles.Role private _minters;
+
+    constructor () internal {
+        _addMinter(msg.sender);
+    }
+
+    modifier onlyMinter() {
+        require(isMinter(msg.sender), "MinterRole: caller does not have the Minter role");
+        _;
+    }
+
+    function isMinter(address account) public view returns (bool) {
+        return _minters.has(account);
+    }
+
+    function addMinter(address account) public onlyMinter {
+        _addMinter(account);
+    }
+
+    function renounceMinter() public {
+        _removeMinter(msg.sender);
+    }
+
+    function _addMinter(address account) internal {
+        _minters.add(account);
+        emit MinterAdded(account);
+    }
+
+    function _removeMinter(address account) internal {
+        _minters.remove(account);
+        emit MinterRemoved(account);
+    }
+}
+
+// File: contracts\utils\String.sol
+
+pragma solidity ^0.5.0;
+
+library String {
+
+  function uint2str(uint _i) internal pure returns (string memory _uintAsString) {
+    if (_i == 0) {
+      return "0";
+    }
+    uint j = _i;
+    uint len;
+    while (j != 0) {
+      len++;
+      j /= 10;
+    }
+    bytes memory bstr = new bytes(len);
+    uint k = len - 1;
+    while (_i != 0) {
+      bstr[k--] = byte(uint8(48 + _i % 10));
+      _i /= 10;
+    }
+    return string(bstr);
+  }
+
+}
+
+// File: contracts\MerkleProof.sol
+
+// SPDX-License-Identifier: MIT
+// OpenZeppelin Contracts (last updated v4.5.0) (utils/cryptography/MerkleProof.sol)
+
+pragma solidity ^0.5.0;
+
+/**
+ * @dev These functions deal with verification of Merkle Trees proofs.
+ *
+ * The proofs can be generated using the JavaScript library
+ * https://github.com/miguelmota/merkletreejs[merkletreejs].
+ * Note: the hashing algorithm should be keccak256 and pair sorting should be enabled.
+ *
+ * See `test/utils/cryptography/MerkleProof.test.js` for some examples.
+ *
+ * WARNING: You should avoid using leaf values that are 64 bytes long prior to
+ * hashing, or use a hash function other than keccak256 for hashing leaves.
+ * This is because the concatenation of a sorted pair of internal nodes in
+ * the merkle tree could be reinterpreted as a leaf value.
+ */
+library MerkleProof {
+    /**
+     * @dev Returns true if a `leaf` can be proved to be a part of a Merkle tree
+     * defined by `root`. For this, a `proof` must be provided, containing
+     * sibling hashes on the branch from the leaf to the root of the tree. Each
+     * pair of leaves and each pair of pre-images are assumed to be sorted.
+     */
+    function verify(
+        bytes32[] memory proof,
+        bytes32 root,
+        bytes32 leaf
+    ) internal pure returns (bool) {
+        return processProof(proof, leaf) == root;
+    }
+
+    /**
+     * @dev Returns the rebuilt hash obtained by traversing a Merkle tree up
+     * from `leaf` using `proof`. A `proof` is valid if and only if the rebuilt
+     * hash matches the root of the tree. When processing the proof, the pairs
+     * of leafs & pre-images are assumed to be sorted.
+     *
+     * _Available since v4.4._
+     */
+    function processProof(bytes32[] memory proof, bytes32 leaf) internal pure returns (bytes32) {
+        bytes32 computedHash = leaf;
+        for (uint256 i = 0; i < proof.length; i++) {
+            bytes32 proofElement = proof[i];
+            if (computedHash <= proofElement) {
+                // Hash(current computed hash + current element of the proof)
+                computedHash = _efficientHash(computedHash, proofElement);
+            } else {
+                // Hash(current element of the proof + current computed hash)
+                computedHash = _efficientHash(proofElement, computedHash);
+            }
+        }
+        return computedHash;
+    }
+
+    function _efficientHash(bytes32 a, bytes32 b) private pure returns (bytes32 value) {
+        assembly {
+            mstore(0x00, a)
+            mstore(0x20, b)
+            value := keccak256(0x00, 0x40)
+        }
+    }
+}
+
+// File: contracts\KIP17ArcheWorld.sol
+
+pragma solidity ^0.5.0;
+contract KIP17ArcheWorld is KIP17, KIP17Enumerable, KIP17Metadata, MinterRole {
+
+    // To prevent bot attack, we record the last contract call block number.
+    mapping (address => uint256) private _lastCallBlockNumber;
+    uint256 private _antibotInterval;
+
+    // If someone burns NFT in the middle of minting,
+    // the tokenId will go wrong, so use the index instead of totalSupply().
+    uint256 private _mintIndexForSale;
+
+    uint256 private _mintLimitPerBlock;           // Maximum purchase nft per person per block
+    uint256 private _mintLimitPerSale;            // Maximum purchase nft per person per sale
+
+    string  private _tokenBaseURI;
+    uint256 private _mintStartBlockNumber;        // In blockchain, blocknumber is the standard of time.
+    uint256 private _maxSaleAmount;               // Maximum purchase volume of normal sale.
+    uint256 private _mintPrice;                   // 1 KLAY = 1000000000000000000
+
+    string baseURI;
+    string notRevealedUri;
+    bool public revealed = false;
+    bool public publicMintEnabled = false;
+
+    function _baseURI() internal view returns (string memory) {
+      return baseURI;
+    }
+
+    function _notRevealedURI() internal view returns (string memory) {
+      return notRevealedUri;
+    }
+
+    function setBaseURI(string memory _newBaseURI) public onlyMinter {
+      baseURI = _newBaseURI;
+    }
+
+    function setNotRevealedURI(string memory _newNotRevealedURI) public onlyMinter {
+      notRevealedUri = _newNotRevealedURI;
+    }
+
+    function reveal(bool _state) public onlyMinter {
+      revealed = _state;
+    }
+
+    function tokenURI(uint256 tokenId)
+      public
+      view
+      returns (string memory)
+    {
+      require(
+        _exists(tokenId),
+        "KIP17Metadata: URI query for nonexistent token"
+      );
+      
+      if(revealed == false) {
+        string memory currentNotRevealedUri = _notRevealedURI();
+        return bytes(currentNotRevealedUri).length > 0
+            ? string(abi.encodePacked(currentNotRevealedUri, String.uint2str(tokenId), ".json"))
+            : "";
+      }
+      string memory currentBaseURI = _baseURI();
+      return bytes(currentBaseURI).length > 0
+          ? string(abi.encodePacked(currentBaseURI, String.uint2str(tokenId), ".json"))
+          : "";
+    }
+
+    constructor () public {
+      //init explicitly.
+      _mintIndexForSale = 1;
+    }
+
+    function withdraw() external onlyMinter{
+      // This will transfer the remaining contract balance to the owner.
+      // Do not remove this otherwise you will not be able to withdraw the funds.
+      // =============================================================================
+      msg.sender.transfer(address(this).balance);
+      // =============================================================================
+    }
 
 
+    function mintingInformation() external view returns (uint256[7] memory){
+      uint256[7] memory info =
+        [_antibotInterval, _mintIndexForSale, _mintLimitPerBlock, _mintLimitPerSale, 
+          _mintStartBlockNumber, _maxSaleAmount, _mintPrice];
+      return info;
+    }
+
+    function setPublicMintEnabled(bool _state) public onlyMinter {
+      publicMintEnabled = _state;
+    }
+
+    function setupSale(uint256 newAntibotInterval, 
+                       uint256 newMintLimitPerBlock,
+                       uint256 newMintLimitPerSale,
+                       uint256 newMintStartBlockNumber,
+                       uint256 newMintIndexForSale,
+                       uint256 newMaxSaleAmount,
+                       uint256 newMintPrice) external onlyMinter{
+      _antibotInterval = newAntibotInterval;
+      _mintLimitPerBlock = newMintLimitPerBlock;
+      _mintLimitPerSale = newMintLimitPerSale;
+      _mintStartBlockNumber = newMintStartBlockNumber;
+      _mintIndexForSale = newMintIndexForSale;
+      _maxSaleAmount = newMaxSaleAmount;
+      _mintPrice = newMintPrice;
+    }
+
+    //Public Mint
+    function publicMint(uint256 requestedCount) external payable {
+      require(publicMintEnabled, "The public sale is not enabled!");
+      require(_lastCallBlockNumber[msg.sender].add(_antibotInterval) < block.number, "Bot is not allowed");
+      require(block.number >= _mintStartBlockNumber, "Not yet started");
+      require(requestedCount > 0 && requestedCount <= _mintLimitPerBlock, "Too many requests or zero request");
+      require(msg.value == _mintPrice.mul(requestedCount), "Not enough Klay");
+      require(_mintIndexForSale.add(requestedCount) <= _maxSaleAmount + 1, "Exceed max amount");
+      require(balanceOf(msg.sender) + requestedCount <= _mintLimitPerSale, "Exceed max amount per person");
+
+      for(uint256 i = 0; i < requestedCount; i++) {
+        _mint(msg.sender, _mintIndexForSale);
+        _mintIndexForSale = _mintIndexForSale.add(1);
+      }
+      _lastCallBlockNumber[msg.sender] = block.number;
+    }
+
+    //Whitelist Mint
+    bytes32 public merkleRoot;
+    mapping(address => bool) public whitelistClaimed;
+    bool public whitelistMintEnabled = false;
+
+    function setMerkleRoot(bytes32 _merkleRoot) public onlyMinter {
+      merkleRoot = _merkleRoot;
+    }
+
+    function setWhitelistMintEnabled(bool _state) public onlyMinter {
+      whitelistMintEnabled = _state;
+    }
+
+    function whitelistMint(uint256 requestedCount, bytes32[] calldata _merkleProof) external payable {
+      require(whitelistMintEnabled, "The whitelist sale is not enabled!");
+      require(msg.value == _mintPrice.mul(requestedCount), "Not enough Klay");
+      require(!whitelistClaimed[msg.sender], "Address already claimed!");
+      require(requestedCount > 0 && requestedCount <= _mintLimitPerBlock, "Too many requests or zero request");
+      bytes32 leaf = keccak256(abi.encodePacked(msg.sender));
+      require(MerkleProof.verify(_merkleProof, merkleRoot, leaf), "Invalid proof!");
+
+      for(uint256 i = 0; i < requestedCount; i++) {
+        _mint(msg.sender, _mintIndexForSale);
+        _mintIndexForSale = _mintIndexForSale.add(1);
+      }
+
+      whitelistClaimed[msg.sender] = true;
+    }
+
+    //Airdrop Mint
+    function airDropMint(address user, uint256 requestedCount) external onlyMinter {
+      require(requestedCount > 0, "zero request");
+      for(uint256 i = 0; i < requestedCount; i++) {
+        _mint(user, _mintIndexForSale);
+        _mintIndexForSale = _mintIndexForSale.add(1);
+      }
+    }
+}
+
+// File: contracts\KIP17Full.sol
+
+pragma solidity ^0.5.0;
+
+
+
+
+
+/**
+ * @title Full KIP-17 Token
+ * This implementation includes all the required and some optional functionality of the KIP-17 standard
+ * Moreover, it includes approve all functionality using operator terminology
+ * @dev see http://kips.klaytn.com/KIPs/kip-17-non_fungible_token
+ */
+contract KIP17Full is KIP17, KIP17Enumerable, KIP17Metadata, Ownable, KIP17ArcheWorld {
+    constructor (string memory name, string memory symbol) public KIP17Metadata(name, symbol) {
+        // solhint-disable-previous-line no-empty-blocks
+    }
+}
+
+// File: contracts\KIP17MetadataMintable.sol
+
+pragma solidity ^0.5.0;
+
+
+
+/**
+ * @title KIP17MetadataMintable
+ * @dev KIP17 minting logic with metadata.
+ */
+contract KIP17MetadataMintable is KIP13, KIP17, KIP17Metadata, MinterRole {
+    /*
+     *     bytes4(keccak256('mintWithTokenURI(address,uint256,string)')) == 0x50bb4e7f
+     *     bytes4(keccak256('isMinter(address)')) == 0xaa271e1a
+     *     bytes4(keccak256('addMinter(address)')) == 0x983b2d56
+     *     bytes4(keccak256('renounceMinter()')) == 0x98650275
+     *
+     *     => 0x50bb4e7f ^ 0xaa271e1a ^ 0x983b2d56 ^ 0x98650275 == 0xfac27f46
+     */
+    bytes4 private constant _INTERFACE_ID_KIP17_METADATA_MINTABLE = 0xfac27f46;
+
+    /**
+     * @dev Constructor function.
+     */
+    constructor () public {
+        // register the supported interface to conform to KIP17Mintable via KIP13
+        _registerInterface(_INTERFACE_ID_KIP17_METADATA_MINTABLE);
+    }
+
+    /**
+     * @dev Function to mint tokens.
+     * @param to The address that will receive the minted tokens.
+     * @param tokenId The token id to mint.
+     * @param tokenURI The token URI of the minted token.
+     * @return A boolean that indicates if the operation was successful.
+     */
+    function mintWithTokenURI(address to, uint256 tokenId, string memory tokenURI) public onlyMinter returns (bool) {
+        _mint(to, tokenId);
+        _setTokenURI(tokenId, tokenURI);
+        return true;
+    }
+}
+
+// File: contracts\KIP17Mintable.sol
+
+pragma solidity ^0.5.0;
+
+
+/**
+ * @title KIP17Mintable
+ * @dev KIP17 minting logic.
+ */
+contract KIP17Mintable is KIP17, MinterRole {
+    /*
+     *     bytes4(keccak256('isMinter(address)')) == 0xaa271e1a
+     *     bytes4(keccak256('addMinter(address)')) == 0x983b2d56
+     *     bytes4(keccak256('renounceMinter()')) == 0x98650275
+     *     bytes4(keccak256('mint(address,uint256)')) == 0x40c10f19
+     *
+     *     => 0xaa271e1a ^ 0x983b2d56 ^ 0x98650275 ^ 0x40c10f19 == 0xeab83e20
+     */
+    bytes4 private constant _INTERFACE_ID_KIP17_MINTABLE = 0xeab83e20;
+
+    /**
+     * @dev Constructor function.
+     */
+    constructor () public {
+        // register the supported interface to conform to KIP17Mintable via KIP13
+        _registerInterface(_INTERFACE_ID_KIP17_MINTABLE);
+    }
+
+    /**
+     * @dev Function to mint tokens.
+     * @param to The address that will receive the minted tokens.
+     * @param tokenId The token id to mint.
+     * @return A boolean that indicates if the operation was successful.
+     */
+    function mint(address to, uint256 tokenId) public onlyMinter returns (bool) {
+        _mint(to, tokenId);
+        return true;
+    }
+}
+
+// File: contracts\KIP17Burnable.sol
+
+pragma solidity ^0.5.0;
+
+
+/**
+ * @title KIP17 Burnable Token
+ * @dev KIP17 Token that can be irreversibly burned (destroyed).
+ * See http://kips.klaytn.com/KIPs/kip-17-non_fungible_token
+ */
+contract KIP17Burnable is KIP13, KIP17 {
+    /*
+     *     bytes4(keccak256('burn(uint256)')) == 0x42966c68
+     *
+     *     => 0x42966c68 == 0x42966c68
+     */
+    bytes4 private constant _INTERFACE_ID_KIP17_BURNABLE = 0x42966c68;
+
+    /**
+     * @dev Constructor function.
+     */
+    constructor () public {
+        // register the supported interface to conform to KIP17Burnable via KIP13
+        _registerInterface(_INTERFACE_ID_KIP17_BURNABLE);
+    }
+
+    /**
+     * @dev Burns a specific KIP17 token.
+     * @param tokenId uint256 id of the KIP17 token to be burned.
+     */
+    function burn(uint256 tokenId) public {
+        //solhint-disable-next-line max-line-length
+        require(_isApprovedOrOwner(msg.sender, tokenId), "KIP17Burnable: caller is not owner nor approved");
+        _burn(tokenId);
+    }
+}
+
+// File: contracts\roles\PauserRole.sol
+
+pragma solidity ^0.5.0;
 
 contract PauserRole {
     using Roles for Roles.Role;
@@ -1414,10 +1659,9 @@ contract PauserRole {
     }
 }
 
+// File: contracts\lifecycle\Pausable.sol
 
-// File contracts/lifecycle/Pausable.sol
-
-
+pragma solidity ^0.5.0;
 
 /**
  * @dev Contract module which allows children to implement an emergency stop
@@ -1489,10 +1733,9 @@ contract Pausable is PauserRole {
     }
 }
 
+// File: contracts\KIP17Pausable.sol
 
-// File contracts/token/KIP17/KIP17Pausable.sol
-
-
+pragma solidity ^0.5.0;
 
 
 
@@ -1534,16 +1777,15 @@ contract KIP17Pausable is KIP13, KIP17, Pausable {
     }
 }
 
+// File: contracts\KIP17ArcheWorldToken.sol
 
-// File contracts/token/KIP17/KIP17TokenOwnable.sol
-
-
-
+pragma solidity ^0.5.0;
 
 
 
 
-contract ArcheWorld is KIP17Full, KIP17MintableOwnable, KIP17MetadataMintableOwnable, KIP17Burnable, KIP17Pausable {
+
+contract ArcheWorldLand is KIP17Full, KIP17Mintable, KIP17MetadataMintable, KIP17Burnable, KIP17Pausable {
     constructor (string memory name, string memory symbol) public KIP17Full(name, symbol) {
     }
 }
