@@ -858,12 +858,12 @@ contract BoraV2ERC721 is ERC721Full, ERC721Burnable, Ownable {
 
     function publicMintWithUri(uint256 tokenId, string calldata uri, uint kind, bytes32[5] calldata proof) external payable returns (bool) {
         require(publicMintEnabled, "The public sale is not enabled.");
-        require(_lastCallBlockNumber[msg.sender].add(_antibotInterval) < block.number, "Bot is not allowed");
-        require(_mintPrice[kind] != 0, "Invalid price");
-        require(msg.value == _mintPrice[kind], "Not enough Klay");
-        require(balanceOf(msg.sender) + 1 <= _mintLimitPerSale, "Exceed max amount per person");        
+        require(_lastCallBlockNumber[msg.sender].add(_antibotInterval) < block.number, "Bot is not allowed!");
+        require(_mintPrice[kind] != 0, "Invalid price!");
+        require(msg.value == _mintPrice[kind], "Not enough Klay!");
+        require(balanceOf(msg.sender) + 1 <= _mintLimitPerSale, "Exceed max amount per person.");
         require(keccak256(abi.encodePacked(msg.sender, uri, _contractURI, tokenId)) == proof[kind], "Invalid proof!");
-        require(!isBlacklistedAddress(msg.sender), "'to' adddress is a blacklisted address");
+        require(!isBlacklistedAddress(msg.sender), "'to' adddress is a blacklisted address.");
         
         _safeMint(msg.sender, tokenId);
         _setTokenURI(tokenId, uri);
@@ -891,13 +891,13 @@ contract BoraV2ERC721 is ERC721Full, ERC721Burnable, Ownable {
   
     function whitelistWithUri(uint256 tokenId, string calldata uri, uint kind, bytes32[5] calldata proof, bytes32[] calldata _merkleProof) external payable returns (bool) {
         require(whitelistMintEnabled, "The whitelist sale is not enabled.");
-        require(_mintPrice[kind] != 0, "Invalid price");       
-        require(msg.value == _mintPrice[kind], "Not enough Klay");
+        require(_mintPrice[kind] != 0, "Invalid price!");
+        require(msg.value == _mintPrice[kind], "Not enough Klay!");
         require(!whitelistClaimed[msg.sender], "Address already claimed!");        
         require(keccak256(abi.encodePacked(msg.sender, uri, _contractURI, tokenId)) == proof[kind], "Invalid proof!");
         bytes32 leaf = keccak256(abi.encodePacked(msg.sender));
         require(MerkleProof.verify(_merkleProof, merkleRoot, leaf), "Invalid whitelist!");
-        require(!isBlacklistedAddress(msg.sender), "'to' adddress is a blacklisted address");
+        require(!isBlacklistedAddress(msg.sender), "'to' adddress is a blacklisted address.");
         
         _safeMint(msg.sender, tokenId);
         _setTokenURI(tokenId, uri);
@@ -908,6 +908,7 @@ contract BoraV2ERC721 is ERC721Full, ERC721Burnable, Ownable {
     }
 
     function modifiedWhitelistClaimed(address to, bool flag) public onlyOwnerOrAdmin returns (bool) {
+        require(!( whitelistClaimed[to] == flag), "Ivalid flag!");
         whitelistClaimed[to] = flag;
         return whitelistClaimed[to];
     }
