@@ -862,7 +862,7 @@ contract BoraV2ERC721 is ERC721Full, ERC721Burnable, Ownable {
         require(_mintPrice[kind] != 0, "Invalid price!");
         require(msg.value == _mintPrice[kind], "Not enough Klay!");
         require(balanceOf(msg.sender) + 1 <= _mintLimitPerSale, "Exceed max amount per person.");
-        require(keccak256(abi.encodePacked(msg.sender, uri, _contractURI, tokenId)) == proof[kind], "Invalid proof!");
+        require(keccak256(abi.encodePacked(msg.sender, uri, _contractURI, tokenId, kind)) == proof[kind], "Invalid proof!");
         require(!isBlacklistedAddress(msg.sender), "'to' adddress is a blacklisted address.");
         
         _safeMint(msg.sender, tokenId);
@@ -894,7 +894,7 @@ contract BoraV2ERC721 is ERC721Full, ERC721Burnable, Ownable {
         require(_mintPrice[kind] != 0, "Invalid price!");
         require(msg.value == _mintPrice[kind], "Not enough Klay!");
         require(!whitelistClaimed[msg.sender], "Address already claimed!");        
-        require(keccak256(abi.encodePacked(msg.sender, uri, _contractURI, tokenId)) == proof[kind], "Invalid proof!");
+        require(keccak256(abi.encodePacked(msg.sender, uri, _contractURI, tokenId, kind)) == proof[kind], "Invalid proof!");
         bytes32 leaf = keccak256(abi.encodePacked(msg.sender));
         require(MerkleProof.verify(_merkleProof, merkleRoot, leaf), "Invalid whitelist!");
         require(!isBlacklistedAddress(msg.sender), "'to' adddress is a blacklisted address.");
