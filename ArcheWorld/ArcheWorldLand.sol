@@ -794,6 +794,7 @@ contract BoraV2ERC721 is ERC721Full, ERC721Burnable, Ownable {
         
     bool public whitelistMintEnabled = false;    // enable minting for a whitelisted address
     bytes32 public merkleRoot;
+    bool public whitelistClaimEnabled = false;
     mapping(address => bool) public whitelistClaimed;
     bool public publicMintEnabled = false;
     // To prevent bot attack, we record the last contract call block number.
@@ -874,7 +875,7 @@ contract BoraV2ERC721 is ERC721Full, ERC721Burnable, Ownable {
     }
 
     function setMerkleRoot(bytes32 _merkleRoot) public onlyOwnerOrAdmin {
-      merkleRoot = _merkleRoot;
+        merkleRoot = _merkleRoot;
     }
 
     function setWhitelistMintEnabled(bool useFlag) public onlyOwnerOrAdmin {
@@ -885,12 +886,20 @@ contract BoraV2ERC721 is ERC721Full, ERC721Burnable, Ownable {
         return whitelistMintEnabled;
     }
 
-    function contractBalance() public view returns (uint256) {
-        return address(this).balance;
+    function modifiedWhitelistClaimed(address to, bool flag) public onlyOwnerOrAdmin returns (bool) {
+        require(whitelistClaimEnabled, "Invalid claim enabled flag!");
+        require(!(whitelistClaimed[to] == flag), "Invalid flag!");
+        whitelistClaimed[to] = flag;
+        return whitelistClaimed[to];
+    }
+
+    function setWhitelistClaimEnabled(bool useFlag) public onlyOwnerOrAdmin {
+        whitelistClaimEnabled = useFlag;
     }
   
     function whitelistWithUri(uint256 tokenId, string calldata uri, uint kind, bytes32[5] calldata proof, bytes32[] calldata _merkleProof) external payable returns (bool) {
         require(whitelistMintEnabled, "The whitelist sale is not enabled.");
+        require(_lastCallBlockNumber[msg.sender].add(_antibotInterval) < block.number, "Bot is not allowed!");
         require(_mintPrice[kind] != 0, "Invalid price!");
         require(msg.value == _mintPrice[kind], "Not enough Klay!");
         require(!whitelistClaimed[msg.sender], "Address already claimed!");        
@@ -902,17 +911,18 @@ contract BoraV2ERC721 is ERC721Full, ERC721Burnable, Ownable {
         _safeMint(msg.sender, tokenId);
         _setTokenURI(tokenId, uri);
         incrementMintCount();
-        whitelistClaimed[msg.sender] = true;
+        if (whitelistClaimEnabled) {
+            whitelistClaimed[msg.sender] = true;
+        }
+        _lastCallBlockNumber[msg.sender] = block.number;
         emit Mint(msg.sender, tokenId, _msgSender());
         return true;
     }
 
-    function modifiedWhitelistClaimed(address to, bool flag) public onlyOwnerOrAdmin returns (bool) {
-        require(!( whitelistClaimed[to] == flag), "Ivalid flag!");
-        whitelistClaimed[to] = flag;
-        return whitelistClaimed[to];
+    function contractBalance() public onlyOwnerOrAdmin returns (uint256) {
+        return address(this).balance;
     }
-
+    
     function withdraw() external onlyOwner {
       // This will transfer the remaining contract balance to the owner.
       // Do not remove this otherwise you will not be able to withdraw the funds.
@@ -936,10 +946,6 @@ contract BoraV2ERC721 is ERC721Full, ERC721Burnable, Ownable {
         return true;
     }
 
-    function mintWithUri(address to, uint256 tokenId, string memory uri, uint256 serviceId, uint256 logNo) public onlyOwnerOrAdmin returns (bool) {
-        mintWithUri(to, tokenId, uri, serviceId);
-    }
-
     function mintMultipleTokensWithUri(address[] memory receivers, uint256[] memory tokenIds, string[] memory uris) public onlyOwnerOrAdmin returns (bool){
         require(receivers.length == tokenIds.length && tokenIds.length == uris.length, "Input arrays must be the same length");
 
@@ -949,10 +955,6 @@ contract BoraV2ERC721 is ERC721Full, ERC721Burnable, Ownable {
         return true;
     }
 
-    function mintMultipleTokensWithUri(address[] memory receivers, uint256[] memory tokenIds, string[] memory uris, uint256 logNo) public onlyOwnerOrAdmin returns (bool) {
-        return mintMultipleTokensWithUri(receivers, tokenIds, uris);
-    }
-
     function mintMultipleTokensWithUri(address[] memory receivers, uint256[] memory tokenIds, string[] memory uris, uint256[] memory serviceIds) public onlyOwnerOrAdmin returns (bool){
         require(receivers.length == tokenIds.length && tokenIds.length == uris.length && uris.length == serviceIds.length, "Input arrays must be the same length");
 
@@ -960,10 +962,6 @@ contract BoraV2ERC721 is ERC721Full, ERC721Burnable, Ownable {
             mintWithUri(receivers[i], tokenIds[i], uris[i], serviceIds[i]);
         }
         return true;
-    }
-
-    function mintMultipleTokensWithUri(address[] memory receivers, uint256[] memory tokenIds, string[] memory uris, uint256[] memory serviceIds, uint256 logNo) public onlyOwnerOrAdmin returns (bool){
-        return mintMultipleTokensWithUri(receivers, tokenIds, uris, serviceIds);
     }
 
     function mint(address to, uint256 tokenId) public onlyOwnerOrAdmin returns (bool) {
@@ -981,18 +979,10 @@ contract BoraV2ERC721 is ERC721Full, ERC721Burnable, Ownable {
         return true;
     }
 
-    function mint(address to, uint256 tokenId, uint256 serviceId, uint256 logNo) public returns (bool) {
-        return mint(to, tokenId, serviceId);
-    }
-
     function setServiceIdOfToken(uint256 tokenId, uint256 serviceId) public onlyOwnerOrAdmin returns (bool){
         require(_exists(tokenId), "nonexistent token");
         tokenIdToServiceIdMap[tokenId] = serviceId;
         return true;
-    }
- 
-    function setServiceIdOfToken(uint256 tokenId, uint256 serviceId, uint256 logNo) public onlyOwnerOrAdmin returns (bool){
-        return setServiceIdOfToken(tokenId, serviceId);
     }
 
     function getServiceIdOfToken(uint256 tokenId) external view returns (uint256){
@@ -1008,20 +998,12 @@ contract BoraV2ERC721 is ERC721Full, ERC721Burnable, Ownable {
         super.transferFrom(from, to, tokenId);
     }
 
-    function transferFrom(address from, address to, uint256 tokenId, uint256 logNo) public {
-        return transferFrom(from, to, tokenId);
-    }
-
     function safeTransferFrom(address from, address to, uint256 tokenId) public callerNotBlacklisted whenTokenNotLocked(tokenId) {
         require(!isBlacklistedAddress(to), "'to' address is a blacklisted address");
         if(!isOwnerOrAdmin()) {
             require(!isBlacklistedAddress(from), "'from' address is a blacklisted address");
         }
         super.safeTransferFrom(from, to, tokenId);
-    }
-
-    function safeTransferFrom(address from, address to, uint256 tokenId, uint256 logNo) public callerNotBlacklisted whenTokenNotLocked(tokenId) {
-        return safeTransferFrom(from, to, tokenId);
     }
 
     function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public callerNotBlacklisted whenTokenNotLocked(tokenId) {
@@ -1049,10 +1031,6 @@ contract BoraV2ERC721 is ERC721Full, ERC721Burnable, Ownable {
         for (uint i = 0; i < to.length; i++) {
             mint(to[i], tokenIds[i]);
         }
-    }
-
-    function mintMultipleTokens(address[] memory to, uint256[] memory tokenIds, uint256 logNo) public onlyOwnerOrAdmin {
-        mintMultipleTokens(to, tokenIds);
     }
 
     function mintMultipleTokens(address[] memory to, uint256[] memory tokenIds, uint256[] memory serviceIds) public onlyOwnerOrAdmin {
@@ -1116,18 +1094,10 @@ contract BoraV2ERC721 is ERC721Full, ERC721Burnable, Ownable {
         emit Burn(tokenId, _msgSender());
     }
 
-    function burn(uint256 tokenId, uint256 logNo) public callerNotBlacklisted {
-        return burn(tokenId);
-    }
-
     function burnMultipleTokens(uint256[] memory tokenIds) public onlyOwnerOrAdmin {
         for (uint i = 0; i < tokenIds.length; i++) {
             burn(tokenIds[i]);
         }
-    }
-
-    function burnMultipleTokens(uint256[] memory tokenIds, uint256 logNo) public onlyOwnerOrAdmin {
-        burnMultipleTokens(tokenIds);
     }
 
     function getMintCount() public view returns (uint256) {
